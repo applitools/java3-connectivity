@@ -12,10 +12,13 @@ import com.applitools.utils.GeneralUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
+import org.brotli.dec.BrotliInputStream;
 
 import javax.ws.rs.HttpMethod;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
@@ -251,5 +254,20 @@ public class RestClient {
         }
 
         return resultObject;
+    }
+
+    protected byte[] downloadFile(Response response) {
+        byte[] responseBody = response.getBody();
+        String contentEncoding = response.getHeader("Content-Encoding", false);
+        if (!"br".equalsIgnoreCase(contentEncoding)) {
+            return responseBody;
+        }
+
+        try {
+            return IOUtils.toByteArray(new BrotliInputStream(new ByteArrayInputStream(responseBody)));
+        } catch (IOException e) {
+            GeneralUtils.logExceptionStackTrace(logger, e);
+        }
+        return new byte[0];
     }
 }

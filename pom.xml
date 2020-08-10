@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.applitools</groupId>
     <artifactId>java3-connectivity</artifactId>
-    <version>3.173.0</version>
+    <version>3.174.0</version>
     <packaging>pom</packaging>
     <name>java3-connectivity</name>
     <url>http://www.applitools.com</url>

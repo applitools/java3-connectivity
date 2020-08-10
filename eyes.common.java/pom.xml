@@ -15,7 +15,7 @@
     <parent>
         <groupId>com.applitools</groupId>
         <artifactId>java3-connectivity</artifactId>
-        <version>3.173.0</version>
+        <version>3.174.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

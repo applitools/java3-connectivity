@@ -5,7 +5,9 @@ package com.applitools.eyes;
  */
 public interface LogHandler {
     void open();
+
     void onMessage(boolean verbose, String logString);
+
     void close();
 
     boolean isOpen();

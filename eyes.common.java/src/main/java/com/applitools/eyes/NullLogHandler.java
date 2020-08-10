@@ -7,11 +7,14 @@ public class NullLogHandler implements LogHandler {
 
     public static final NullLogHandler instance = new NullLogHandler();
 
-    public void onMessage(boolean verbose, String logString) {}
+    public void onMessage(boolean verbose, String logString) {
+    }
 
-    public void open() {}
+    public void open() {
+    }
 
-    public void close() {}
+    public void close() {
+    }
 
     @Override
     public boolean isOpen() {

@@ -6,7 +6,10 @@ package com.applitools.eyes;
 public class Logger {
     private LogHandler logHandler;
     private String sessionId;
-    protected int getMethodsBack() { return 3; }
+
+    protected int getMethodsBack() {
+        return 3;
+    }
 
     public Logger() {
         logHandler = new NullLogHandler();
@@ -31,6 +34,7 @@ public class Logger {
 
     /**
      * Sets the log handler.
+     *
      * @param handler The log handler to set. If you want a log handler which
      *                does nothing, use {@link
      *                com.applitools.eyes.NullLogHandler}.
@@ -60,6 +64,7 @@ public class Logger {
 
     /**
      * Writes a verbose write message.
+     *
      * @param message The message to log as verbose.
      */
     public void verbose(String message) {
@@ -68,6 +73,7 @@ public class Logger {
 
     /**
      * Writes a (non-verbose) write message.
+     *
      * @param message The message to log.
      */
     public void log(String message) {

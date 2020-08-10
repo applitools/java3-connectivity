@@ -11,11 +11,12 @@ public class RectangleSize {
     private int width;
     private int height;
 
-    public static RectangleSize EMPTY = new RectangleSize(0,0);
+    public static RectangleSize EMPTY = new RectangleSize(0, 0);
 
     /**
      * Creates a new RectangleSize instance.
-     * @param width The width of the rectangle.
+     *
+     * @param width  The width of the rectangle.
      * @param height The height of the rectangle.
      */
     @JsonCreator
@@ -53,6 +54,7 @@ public class RectangleSize {
 
     /**
      * Parses a string into a {link RectangleSize} instance.
+     *
      * @param size A string representing width and height separated by "x".
      * @return An instance representing the input size.
      */
@@ -84,7 +86,7 @@ public class RectangleSize {
      * @param obj A {@link com.applitools.eyes.RectangleSize} instance to be
      *            checked for equality with the current instance.
      * @return {@code true} if and only if the input objects are equal by
-     *          value, {@code false} otherwise.
+     * value, {@code false} otherwise.
      */
     @Override
     public boolean equals(Object obj) {

@@ -18,7 +18,8 @@ public abstract class Response {
 
     /**
      * Get a response header
-     * @param name The name of the header
+     *
+     * @param name       The name of the header
      * @param ignoreCase If true, ignores case
      * @return The value of the header
      */

@@ -33,7 +33,8 @@ public class HttpClientImpl extends HttpClient {
             SSLContext sslContext = NetworkUtils.getDisabledSSLContext();
             HTTPSProperties props = new HTTPSProperties(HttpsURLConnection.getDefaultHostnameVerifier(), sslContext);
             clientConfig.getProperties().put(HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, props);
-        } catch (NoSuchAlgorithmException | KeyManagementException ignored) {}
+        } catch (NoSuchAlgorithmException | KeyManagementException ignored) {
+        }
 
         if (abstractProxySettings == null) {
             client = Client.create(clientConfig);

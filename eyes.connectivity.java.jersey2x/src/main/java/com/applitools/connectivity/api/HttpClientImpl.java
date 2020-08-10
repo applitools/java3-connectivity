@@ -50,7 +50,8 @@ public class HttpClientImpl extends HttpClient {
         try {
             SSLContext sslContext = NetworkUtils.getDisabledSSLContext();
             builder.sslContext(sslContext);
-        } catch (NoSuchAlgorithmException | KeyManagementException ignored) {}
+        } catch (NoSuchAlgorithmException | KeyManagementException ignored) {
+        }
         client = builder.build();
     }
 

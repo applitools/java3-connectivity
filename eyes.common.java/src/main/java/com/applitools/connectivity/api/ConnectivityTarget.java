@@ -17,13 +17,15 @@ public abstract class ConnectivityTarget {
 
     /**
      * Configures a query parameter on the URI
-     * @param name Parameter name
+     *
+     * @param name  Parameter name
      * @param value Parameter value
      */
     public abstract ConnectivityTarget queryParam(String name, String value);
 
     /**
      * Creates a request for sending to the server
+     *
      * @param acceptableResponseTypes Accepted response media types
      * @return The request
      */
@@ -31,6 +33,7 @@ public abstract class ConnectivityTarget {
 
     /**
      * Creates an async request for sending to the server
+     *
      * @param acceptableResponseTypes Accepted response media types
      * @return The request
      */

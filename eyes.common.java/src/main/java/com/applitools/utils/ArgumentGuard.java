@@ -12,6 +12,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input parameter is null.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -24,6 +25,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input iterable contains null elements.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -38,6 +40,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input array has contains elements.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -48,6 +51,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input parameter equals the input value.
+     *
      * @param param     The input parameter.
      * @param value     The input value.
      * @param paramName The input parameter name.
@@ -60,6 +64,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input parameter string is null or empty.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -73,6 +78,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input parameter is not null.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -86,6 +92,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input integer parameter is negative.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -98,6 +105,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input integer parameter is smaller than 1.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -110,6 +118,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input integer parameter is below or equal to 0.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -122,6 +131,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if the input integer parameter is equal to 0.
+     *
      * @param param     The input parameter.
      * @param paramName The input parameter name.
      */
@@ -135,6 +145,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if isValid is false.
+     *
      * @param isValid Whether the current state is valid.
      * @param errMsg  A description of the error.
      */
@@ -147,6 +158,7 @@ public class ArgumentGuard {
 
     /**
      * Fails if param is not of the expected type.
+     *
      * @param param              The input parameter
      * @param paramExpectedClass The expected type.
      * @param paramName          The input parameter name.

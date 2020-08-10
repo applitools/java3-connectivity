@@ -20,6 +20,7 @@ public abstract class HttpClient {
 
     /**
      * Creates a new web resource target.
+     *
      * @param baseUrl The base url of the server.
      * @return The created target
      */
@@ -27,6 +28,7 @@ public abstract class HttpClient {
 
     /**
      * Creates a new web resource target.
+     *
      * @param path The base url of the server.
      * @return The created target
      */

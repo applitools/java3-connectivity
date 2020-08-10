@@ -58,7 +58,7 @@ public class RestClient {
 
         this.logger = logger;
         jsonMapper = new ObjectMapper();
-        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+        jsonMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.serverUrl = serverUrl;
         this.restClient = new HttpClientImpl(logger, timeout, null);
     }
@@ -114,7 +114,8 @@ public class RestClient {
 
     /**
      * Sending HTTP request to a specific url
-     * @param url The target url
+     *
+     * @param url    The target url
      * @param method The HTTP method
      * @param accept Accepted response content types
      * @return The response from the server
@@ -188,6 +189,7 @@ public class RestClient {
 
     /**
      * Builds an error message which includes the response model.
+     *
      * @param errMsg       The error message.
      * @param statusCode   The response status code.
      * @param statusPhrase The response status phrase.
@@ -214,14 +216,14 @@ public class RestClient {
      * 2. verify that the status code is valid
      * 3. Parse the response model from JSON to the relevant type.
      *
-     * @param response The response to parse.
+     * @param response             The response to parse.
      * @param validHttpStatusCodes The list of acceptable status codes.
-     * @param resultType The class object of the type of result this response
-     *                   should be parsed to.
-     * @param <T> The return value type.
+     * @param resultType           The class object of the type of result this response
+     *                             should be parsed to.
+     * @param <T>                  The return value type.
      * @return The parse response of the type given in {@code resultType}.
      * @throws EyesException For invalid status codes or if the response
-     * parsing failed.
+     *                       parsing failed.
      */
     protected <T> T parseResponseWithJsonData(Response response, List<Integer> validHttpStatusCodes, TypeReference<T> resultType)
             throws EyesException {

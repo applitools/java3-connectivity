@@ -29,8 +29,8 @@ public abstract class AbstractProxySettings {
     }
 
     /**
-     * @param uri      The proxy's URI.
-     * @param port     The proxy's port
+     * @param uri  The proxy's URI.
+     * @param port The proxy's port
      */
     public AbstractProxySettings(String uri, int port) {
         this(uri, port, null, null);
@@ -47,6 +47,7 @@ public abstract class AbstractProxySettings {
 
     /**
      * Defines proxy settings with empty username/password.
+     *
      * @param uri The proxy's URI.
      */
     @SuppressWarnings("UnusedDeclaration")

@@ -5,10 +5,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.applitools</groupId>
-    <artifactId>java3-connectivity</artifactId>
+    <artifactId>eyes-common-java3-parent</artifactId>
+    <name>eyes-common-java3-parent</name>
     <version>3.175.0</version>
     <packaging>pom</packaging>
-    <name>java3-connectivity</name>
     <url>http://www.applitools.com</url>
     <description>Connectivity modules of Applitools java sdk</description>
     <licenses>
@@ -18,9 +18,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git://github.com/applitools/java3-connectivity.git</connection>
-        <developerConnection>scm:git:ssh://github.com:applitools/java3-connectivity.git</developerConnection>
-        <url>https://github.com/applitools/java3-connectivity</url>
+        <connection>scm:git:git://github.com/applitools/eyes.common.java3.git</connection>
+        <developerConnection>scm:git:ssh://github.com:applitools/eyes.common.java3.git</developerConnection>
+        <url>https://github.com/applitools/eyes.common.java3</url>
     </scm>
     <developers>
         <developer>

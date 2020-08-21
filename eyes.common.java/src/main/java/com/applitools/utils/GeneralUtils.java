@@ -296,9 +296,9 @@ public class GeneralUtils {
      *
      * @param <T>       The type parameter
      * @param jsonStr   The JSON string to parse
-     * @param tClass    The Class object of <T>
-     * @return An instance of Class T, created by parsing of the given JSON string
-     * @throws IOException the io exception
+     * @param tClass    The Class object of Type {@code T}
+     * @return An instance of Class {@code T}, created by parsing of the given JSON string
+     * @throws IOException An IO Exception
      */
     public static <T> T parseJsonToObject(String jsonStr, Class<T> tClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();

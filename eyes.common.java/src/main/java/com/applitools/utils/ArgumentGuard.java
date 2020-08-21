@@ -13,8 +13,8 @@ public class ArgumentGuard {
     /**
      * Fails if the input parameter is null.
      *
-     * @param param     The input parameter.
-     * @param paramName The input parameter name.
+     * @param param     The input parameter
+     * @param paramName The input parameter name
      */
     public static void notNull(Object param, String paramName)
             throws IllegalArgumentException {
@@ -26,8 +26,9 @@ public class ArgumentGuard {
     /**
      * Fails if the input iterable contains null elements.
      *
-     * @param param     The input parameter.
-     * @param paramName The input parameter name.
+     * @param <T>       The type parameter
+     * @param param     The input parameter
+     * @param paramName The input parameter name
      */
     public static <T> void notContainsNull(Iterable<T> param, String paramName) throws IllegalArgumentException {
         notNull(param, paramName);
@@ -41,8 +42,9 @@ public class ArgumentGuard {
     /**
      * Fails if the input array has contains elements.
      *
-     * @param param     The input parameter.
-     * @param paramName The input parameter name.
+     * @param <T>       The type parameter
+     * @param param     The input parameter
+     * @param paramName The input parameter name
      */
     public static <T> void notContainsNull(T[] param, String paramName) throws IllegalArgumentException {
         notNull(param, paramName);
@@ -52,9 +54,9 @@ public class ArgumentGuard {
     /**
      * Fails if the input parameter equals the input value.
      *
-     * @param param     The input parameter.
-     * @param value     The input value.
-     * @param paramName The input parameter name.
+     * @param param     The input parameter
+     * @param value     The input value
+     * @param paramName The input parameter name
      */
     public static void notEqual(Object param, Object value, String paramName) {
         if (param == value || (param != null && param.equals(value))) {

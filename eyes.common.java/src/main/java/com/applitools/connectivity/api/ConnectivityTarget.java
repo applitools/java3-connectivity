@@ -12,6 +12,7 @@ public abstract class ConnectivityTarget {
 
     /**
      * @param path Appends path to the URI
+     * @return A {@link ConnectivityTarget} updated with the given path
      */
     public abstract ConnectivityTarget path(String path);
 
@@ -20,6 +21,7 @@ public abstract class ConnectivityTarget {
      *
      * @param name  Parameter name
      * @param value Parameter value
+     * @return A {@link ConnectivityTarget} updated with the given query parameter
      */
     public abstract ConnectivityTarget queryParam(String name, String value);
 

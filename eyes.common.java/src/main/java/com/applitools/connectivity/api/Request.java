@@ -18,6 +18,7 @@ public abstract class Request {
      *
      * @param name  The header name
      * @param value The header value
+     * @return An {@link Request} object updated with the given header
      */
     public abstract Request header(String name, String value);
 

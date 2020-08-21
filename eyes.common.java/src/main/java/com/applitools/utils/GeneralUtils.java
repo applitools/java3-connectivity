@@ -33,7 +33,6 @@ public class GeneralUtils {
     private static final String DATE_FORMAT_ISO8601_FOR_INPUT =
             "yyyy-MM-dd'T'HH:mm:ssXXX";
 
-    @SuppressWarnings("SpellCheckingInspection")
     private static final String DATE_FORMAT_RFC1123 =
             "E, dd MMM yyyy HH:mm:ss 'GMT'";
     private static final String QUESTION_MARK = "?";
@@ -295,19 +294,20 @@ public class GeneralUtils {
     /**
      * Parse json to object t.
      *
-     * @param <T>                the type parameter
-     * @param executeScripString the execute scrip string
-     * @return the t
+     * @param <T>       The type parameter
+     * @param jsonStr   The JSON string to parse
+     * @param tClass    The Class object of <T>
+     * @return An instance of Class <T>, created by parsing of the given JSON string
      * @throws IOException the io exception
      */
-    public static <T> T parseJsonToObject(String executeScripString, Class<T> tClass) throws IOException {
+    public static <T> T parseJsonToObject(String jsonStr, Class<T> tClass) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         T executeScriptMap;
         if (tClass != null) {
-            executeScriptMap = mapper.readValue(executeScripString, tClass);
+            executeScriptMap = mapper.readValue(jsonStr, tClass);
         } else {
-            executeScriptMap = mapper.readValue(executeScripString, new TypeReference<T>() {
+            executeScriptMap = mapper.readValue(jsonStr, new TypeReference<T>() {
             });
         }
         return executeScriptMap;

@@ -20,6 +20,7 @@ public abstract class AsyncRequest {
      *
      * @param name  The header name
      * @param value The header value
+     * @return An {@link AsyncRequest} object updated with the given header
      */
     public abstract AsyncRequest header(String name, String value);
 

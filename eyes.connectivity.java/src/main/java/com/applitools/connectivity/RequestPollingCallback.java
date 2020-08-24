@@ -3,7 +3,6 @@ package com.applitools.connectivity;
 import com.applitools.connectivity.api.AsyncRequestCallback;
 import com.applitools.connectivity.api.Response;
 import com.applitools.eyes.EyesException;
-import com.applitools.eyes.exceptions.ConnectionException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 
@@ -36,7 +35,7 @@ class RequestPollingCallback implements AsyncRequestCallback {
             }
 
             if (status != HttpStatus.SC_OK) {
-                pollingFinishedCallback.onFail(new ConnectionException(
+                pollingFinishedCallback.onFail(new EyesException(
                         String.format("Got bad status code when polling from the server. Status code: %d", status)));
                 return;
             }

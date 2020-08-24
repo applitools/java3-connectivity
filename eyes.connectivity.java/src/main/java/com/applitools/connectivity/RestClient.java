@@ -4,6 +4,7 @@ import com.applitools.connectivity.api.*;
 import com.applitools.eyes.AbstractProxySettings;
 import com.applitools.eyes.EyesException;
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.SyncTaskListener;
 import com.applitools.utils.ArgumentGuard;
 import com.applitools.utils.GeneralUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RestClient {
 
@@ -143,6 +145,40 @@ public class RestClient {
         }
 
         return request.header(AGENT_ID_CUSTOM_HEADER, agentId);
+    }
+
+    /**
+     * Send a synchronous request to the server
+     */
+    public Response sendHttpRequest(final String url, final String method, final String... accept) {
+        final AtomicReference<Response> responseReference = new AtomicReference<>();
+        final Object lock = "";
+        final SyncTaskListener<Response> listener = new SyncTaskListener<>(lock, responseReference);
+        sendAsyncRequest(new AsyncRequestCallback() {
+            @Override
+            public void onComplete(Response response) {
+                listener.onComplete(response);
+            }
+
+            @Override
+            public void onFail(Throwable throwable) {
+                listener.onFail();
+            }
+        }, url, method, new HashMap<String, String>(), accept);
+
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+                throw new EyesException("Failed waiting for response", e);
+            }
+        }
+
+        if (responseReference.get() == null) {
+            throw new EyesException("Failed getting response from the server");
+        }
+
+        return responseReference.get();
     }
 
     protected void sendLongRequest(AsyncRequest request, String method, final AsyncRequestCallback callback, String data, String mediaType) throws EyesException {

@@ -4,15 +4,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SyncTaskListener<T> implements TaskListener<T> {
 
-    private final Object syncObject;
+    private final AtomicReference<Object> syncObject;
     private final AtomicReference<T> reference;
 
 
-    public SyncTaskListener(Object syncObject) {
+    public SyncTaskListener(AtomicReference<Object> syncObject) {
         this(syncObject, null);
     }
 
-    public SyncTaskListener(Object syncObject, AtomicReference<T> reference) {
+    public SyncTaskListener(AtomicReference<Object> syncObject, AtomicReference<T> reference) {
         this.syncObject = syncObject;
         this.reference = reference;
     }
@@ -23,8 +23,8 @@ public class SyncTaskListener<T> implements TaskListener<T> {
             reference.set(taskResponse);
         }
 
-        synchronized (syncObject) {
-            syncObject.notify();
+        synchronized (syncObject.get()) {
+            syncObject.get().notify();
         }
     }
 
@@ -33,5 +33,9 @@ public class SyncTaskListener<T> implements TaskListener<T> {
         synchronized (syncObject) {
             syncObject.notify();
         }
+    }
+
+    public AtomicReference<T> getReference() {
+        return reference;
     }
 }

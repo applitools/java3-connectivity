@@ -152,7 +152,7 @@ public class RestClient {
      */
     public Response sendHttpRequest(final String url, final String method, final String... accept) {
         final AtomicReference<Response> responseReference = new AtomicReference<>();
-        final Object lock = "";
+        final AtomicReference<Object> lock = new AtomicReference<>(new Object());
         final SyncTaskListener<Response> listener = new SyncTaskListener<>(lock, responseReference);
         sendAsyncRequest(new AsyncRequestCallback() {
             @Override
@@ -166,9 +166,9 @@ public class RestClient {
             }
         }, url, method, new HashMap<String, String>(), accept);
 
-        synchronized (lock) {
+        synchronized (lock.get()) {
             try {
-                lock.wait();
+                lock.get().wait();
             } catch (InterruptedException e) {
                 throw new EyesException("Failed waiting for response", e);
             }

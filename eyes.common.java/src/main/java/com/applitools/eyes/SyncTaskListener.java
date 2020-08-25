@@ -30,8 +30,8 @@ public class SyncTaskListener<T> implements TaskListener<T> {
 
     @Override
     public void onFail() {
-        synchronized (syncObject) {
-            syncObject.notify();
+        synchronized (syncObject.get()) {
+            syncObject.get().notify();
         }
     }
 

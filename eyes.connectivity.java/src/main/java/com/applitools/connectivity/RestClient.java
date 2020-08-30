@@ -1,12 +1,10 @@
 package com.applitools.connectivity;
 
-import com.applitools.connectivity.api.HttpClient;
-import com.applitools.connectivity.api.HttpClientImpl;
-import com.applitools.connectivity.api.Request;
-import com.applitools.connectivity.api.Response;
+import com.applitools.connectivity.api.*;
 import com.applitools.eyes.AbstractProxySettings;
 import com.applitools.eyes.EyesException;
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.SyncTaskListener;
 import com.applitools.utils.ArgumentGuard;
 import com.applitools.utils.GeneralUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,9 +19,8 @@ import javax.ws.rs.HttpMethod;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RestClient {
 
@@ -36,7 +33,7 @@ public class RestClient {
     }
 
     protected interface HttpRequestBuilder {
-        Request build();
+        AsyncRequest build();
     }
 
     private static final String AGENT_ID_CUSTOM_HEADER = "x-applitools-eyes-client";
@@ -112,31 +109,36 @@ public class RestClient {
         }
     }
 
-    /**
-     * Sending HTTP request to a specific url
-     *
-     * @param url    The target url
-     * @param method The HTTP method
-     * @param accept Accepted response content types
-     * @return The response from the server
-     */
-    public Response sendHttpWebRequest(final String url, final String method, final String... accept) {
-        Request request = makeEyesRequest(new HttpRequestBuilder() {
+    public void sendAsyncRequest(AsyncRequestCallback callback, final String url, final String method, final String... accept) {
+        sendAsyncRequest(callback, url, method, new HashMap<String, String>(), accept);
+    }
+
+    public void sendAsyncRequest(AsyncRequestCallback callback, final String url, final String method, final Map<String, String> queryParams, final String... accept) {
+        final AsyncRequest request = makeEyesRequest(new HttpRequestBuilder() {
             @Override
-            public Request build() {
-                return restClient.target(url).request(accept);
+            public AsyncRequest build() {
+                ConnectivityTarget target =  restClient.target(url);
+                for (Map.Entry<String, String> pair : queryParams.entrySet()) {
+                    target.queryParam(pair.getKey(), pair.getValue());
+                }
+                return target.asyncRequest(accept);
             }
         });
 
-        String currentTime = GeneralUtils.toRfc1123(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
-        return request.header("Eyes-Date", currentTime).method(method, null, null);
+        sendAsyncRequest(request, method, callback);
     }
 
-    /**
-     * Creates a request for the eyes server
-     */
-    protected Request makeEyesRequest(HttpRequestBuilder builder) {
-        Request request = builder.build();
+    public void sendAsyncRequest(AsyncRequest request, String method, AsyncRequestCallback callback) {
+        sendAsyncRequest(request, method, callback, null, null);
+    }
+
+    public void sendAsyncRequest(AsyncRequest request, String method, AsyncRequestCallback callback, Object data, String contentType) {
+        String currentTime = GeneralUtils.toRfc1123(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        request.header("Eyes-Date", currentTime).method(method, callback, data, contentType);
+    }
+
+    protected AsyncRequest makeEyesRequest(HttpRequestBuilder builder) {
+        AsyncRequest request = builder.build();
         if (agentId == null) {
             logger.log("Sending a request without agent id");
             return request;
@@ -145,46 +147,69 @@ public class RestClient {
         return request.header(AGENT_ID_CUSTOM_HEADER, agentId);
     }
 
-    protected Response sendLongRequest(Request request, String method, String data, String mediaType) throws EyesException {
+    /**
+     * Send a synchronous request to the server
+     */
+    public Response sendHttpRequest(final String url, final String method, final String... accept) {
+        final AtomicReference<Response> responseReference = new AtomicReference<>();
+        final AtomicReference<Object> lock = new AtomicReference<>(new Object());
+        final SyncTaskListener<Response> listener = new SyncTaskListener<>(lock, responseReference);
+        sendAsyncRequest(new AsyncRequestCallback() {
+            @Override
+            public void onComplete(Response response) {
+                listener.onComplete(response);
+            }
+
+            @Override
+            public void onFail(Throwable throwable) {
+                listener.onFail();
+            }
+        }, url, method, new HashMap<String, String>(), accept);
+
+        synchronized (lock.get()) {
+            try {
+                lock.get().wait();
+            } catch (InterruptedException e) {
+                throw new EyesException("Failed waiting for response", e);
+            }
+        }
+
+        if (responseReference.get() == null) {
+            throw new EyesException("Failed getting response from the server");
+        }
+
+        return responseReference.get();
+    }
+
+    protected void sendLongRequest(AsyncRequest request, String method, final AsyncRequestCallback callback, String data, String mediaType) throws EyesException {
         String currentTime = GeneralUtils.toRfc1123(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         request = request
                 .header("Eyes-Expect", "202+location")
                 .header("Eyes-Date", currentTime);
 
-        Response response = request.method(method, data, mediaType);
-        String statusUrl = response.getHeader(HttpHeaders.LOCATION, false);
-        int status = response.getStatusCode();
-        if (statusUrl != null && status == HttpStatus.SC_ACCEPTED) {
-            response.close();
-
-            int wait = 500;
-            while (true) {
-                response = sendHttpWebRequest(statusUrl, HttpMethod.GET);
-                if (response.getStatusCode() == HttpStatus.SC_CREATED) {
-                    logger.verbose("exit (CREATED)");
-                    return sendHttpWebRequest(response.getHeader(HttpHeaders.LOCATION, false), HttpMethod.DELETE);
+        AsyncRequestCallback requestFinishedCallback = new AsyncRequestCallback() {
+            @Override
+            public void onComplete(Response response) {
+                String statusUrl = response.getHeader(HttpHeaders.LOCATION, false);
+                int status = response.getStatusCode();
+                if (statusUrl == null || status != HttpStatus.SC_ACCEPTED) {
+                    logger.verbose(String.format("exit (%d)", status));
+                    callback.onComplete(response);
+                    return;
                 }
 
-                status = response.getStatusCode();
-                if (status != HttpStatus.SC_OK) {
-                    // Something went wrong.
-                    logger.verbose("exit (inside loop) (" + status + ")");
-                    return response;
-                }
-
-                try {
-                    Thread.sleep(wait);
-                } catch (InterruptedException e) {
-                    throw new EyesException("Long request interrupted!", e);
-                }
-                wait *= 2;
-                wait = Math.min(10000, wait);
                 response.close();
-                logger.verbose("polling...");
+                RequestPollingCallback pollingCallback = new RequestPollingCallback(RestClient.this, statusUrl, callback);
+                sendAsyncRequest(pollingCallback, statusUrl, HttpMethod.GET);
             }
-        }
-        logger.verbose("exit (" + status + ")");
-        return response;
+
+            @Override
+            public void onFail(Throwable throwable) {
+                callback.onFail(throwable);
+            }
+        };
+
+        sendAsyncRequest(request, method, requestFinishedCallback, data, mediaType);
     }
 
     /**

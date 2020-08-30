@@ -17,6 +17,7 @@ class RequestPollingCallback implements AsyncRequestCallback {
     private final String pollingUrl;
     private final AsyncRequestCallback pollingFinishedCallback;
     private int sleepDuration = 500;
+    private int requestCount = 0;
 
     RequestPollingCallback(RestClient restClient, String pollingUrl, AsyncRequestCallback pollingFinishedCallback) {
         this.restClient = restClient;
@@ -50,8 +51,12 @@ class RequestPollingCallback implements AsyncRequestCallback {
             response.close();
         }
 
-        sleepDuration *= 2;
-        sleepDuration = Math.min(10000, sleepDuration);
+        if (requestCount++ >= 5) {
+            sleepDuration *= 2;
+            requestCount = 0;
+        }
+
+        sleepDuration = Math.min(5000, sleepDuration);
         restClient.logger.verbose("polling...");
         restClient.sendAsyncRequest(this, pollingUrl, HttpMethod.GET);
     }

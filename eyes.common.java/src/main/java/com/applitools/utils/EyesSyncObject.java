@@ -17,17 +17,21 @@ public class EyesSyncObject {
     }
 
     public void waitForNotify() throws InterruptedException {
-        if (isNotified) {
-            return;
-        }
+        try {
+            if (isNotified) {
+                return;
+            }
 
-        wait(WAIT_TIMEOUT);
-        if (isNotified) {
-            return;
-        }
+            wait(WAIT_TIMEOUT);
+            if (isNotified) {
+                return;
+            }
 
-        logger.log(String.format("WARNING: Waiting for %d on object %s", WAIT_TIMEOUT, id));
-        wait();
+            logger.log(String.format("WARNING: Waiting for %d on object %s", WAIT_TIMEOUT, id));
+            wait();
+        } finally {
+            isNotified = false;
+        }
     }
 
     public void notifyObject() {

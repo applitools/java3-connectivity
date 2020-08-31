@@ -6,6 +6,7 @@ import com.applitools.eyes.EyesException;
 import com.applitools.eyes.Logger;
 import com.applitools.eyes.SyncTaskListener;
 import com.applitools.utils.ArgumentGuard;
+import com.applitools.utils.EyesSyncObject;
 import com.applitools.utils.GeneralUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -152,7 +153,7 @@ public class RestClient {
      */
     public Response sendHttpRequest(final String url, final String method, final String... accept) {
         final AtomicReference<Response> responseReference = new AtomicReference<>();
-        final AtomicReference<Object> lock = new AtomicReference<>(new Object());
+        final AtomicReference<EyesSyncObject> lock = new AtomicReference<>(new EyesSyncObject(logger, "sendHttpRequest"));
         final SyncTaskListener<Response> listener = new SyncTaskListener<>(lock, responseReference);
         sendAsyncRequest(new AsyncRequestCallback() {
             @Override
@@ -168,7 +169,7 @@ public class RestClient {
 
         synchronized (lock.get()) {
             try {
-                lock.get().wait();
+                lock.get().waitForNotify();
             } catch (InterruptedException e) {
                 throw new EyesException("Failed waiting for response", e);
             }

@@ -1,18 +1,20 @@
 package com.applitools.eyes;
 
+import com.applitools.utils.EyesSyncObject;
+
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SyncTaskListener<T> implements TaskListener<T> {
 
-    private final AtomicReference<Object> syncObject;
+    private final AtomicReference<EyesSyncObject> syncObject;
     private final AtomicReference<T> reference;
 
 
-    public SyncTaskListener(AtomicReference<Object> syncObject) {
+    public SyncTaskListener(AtomicReference<EyesSyncObject> syncObject) {
         this(syncObject, null);
     }
 
-    public SyncTaskListener(AtomicReference<Object> syncObject, AtomicReference<T> reference) {
+    public SyncTaskListener(AtomicReference<EyesSyncObject> syncObject, AtomicReference<T> reference) {
         this.syncObject = syncObject;
         this.reference = reference;
     }
@@ -24,14 +26,14 @@ public class SyncTaskListener<T> implements TaskListener<T> {
         }
 
         synchronized (syncObject.get()) {
-            syncObject.get().notify();
+            syncObject.get().notifyObject();
         }
     }
 
     @Override
     public void onFail() {
         synchronized (syncObject.get()) {
-            syncObject.get().notify();
+            syncObject.get().notifyObject();
         }
     }
 

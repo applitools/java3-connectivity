@@ -2,6 +2,7 @@ package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
 
+import java.util.UUID;
 import java.util.concurrent.Future;
 
 /**
@@ -10,9 +11,11 @@ import java.util.concurrent.Future;
 public abstract class AsyncRequest {
 
     protected Logger logger;
+    protected final String requestId;
 
     public AsyncRequest(Logger logger) {
         this.logger = logger;
+        this.requestId = UUID.randomUUID().toString();
     }
 
     /**
@@ -34,7 +37,20 @@ public abstract class AsyncRequest {
      */
     public abstract Future<?> method(String method, AsyncRequestCallback callback, Object data, String contentType, boolean logIfError);
 
-    public Future<?> method(String method, AsyncRequestCallback callback, Object data, String contentType) {
-        return method(method, callback, data, contentType, true);
+    public Future<?> method(final String method, final AsyncRequestCallback callback, Object data, String contentType) {
+        logger.verbose(String.format("Sending async request to the server. ID: %s, Type: %s", requestId, method));
+        return method(method, new AsyncRequestCallback() {
+            @Override
+            public void onComplete(Response response) {
+                logger.verbose(String.format("Async request onComplete. ID: %s, Type: %s", requestId, method));
+                callback.onComplete(response);
+            }
+
+            @Override
+            public void onFail(Throwable throwable) {
+                logger.verbose(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
+                callback.onFail(throwable);
+            }
+        }, data, contentType, true);
     }
 }

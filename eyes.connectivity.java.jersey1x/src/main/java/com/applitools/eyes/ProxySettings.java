@@ -30,4 +30,8 @@ public class ProxySettings extends AbstractProxySettings {
     public ProxySettings(String uri) {
         super(uri, "", "");
     }
+
+    public ProxySettings() {
+        super();
+    }
 }

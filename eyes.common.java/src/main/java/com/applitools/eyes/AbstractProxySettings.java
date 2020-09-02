@@ -4,11 +4,15 @@
 package com.applitools.eyes;
 
 import com.applitools.utils.ArgumentGuard;
+import com.applitools.utils.GeneralUtils;
 
 /***
  * Encapsulates settings for sending Eyes communication via proxy.
  */
 public abstract class AbstractProxySettings {
+
+    public static final String PROXY_ENV_VAR_NAME = "APPLITOOLS_HTTP_PROXY";
+
     protected String uri;
     protected String username;
     protected String password;
@@ -53,6 +57,13 @@ public abstract class AbstractProxySettings {
     @SuppressWarnings("UnusedDeclaration")
     public AbstractProxySettings(String uri) {
         this(uri, 8888, null, null);
+    }
+
+    /**
+     * Defines proxy settings with the url in the environment variable
+     */
+    public AbstractProxySettings() {
+        this(GeneralUtils.getEnvString(PROXY_ENV_VAR_NAME));
     }
 
     public String getUri() {

@@ -17,6 +17,12 @@
             <url>https://www.applitools.com/eula/sdk</url>
         </license>
     </licenses>
+
+    <parent>
+        <groupId>com.applitools</groupId>
+        <artifactId>eyes-sdk-java3-parent</artifactId>
+        <version>3.179.0</version>
+    </parent>
     <scm>
         <connection>scm:git:git://github.com/applitools/eyes.common.java3.git</connection>
         <developerConnection>scm:git:ssh://github.com:applitools/eyes.common.java3.git</developerConnection>

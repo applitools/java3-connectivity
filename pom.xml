@@ -7,7 +7,7 @@
     <groupId>com.applitools</groupId>
     <artifactId>eyes-common-java3-parent</artifactId>
     <name>eyes-common-java3-parent</name>
-    <version>3.176.0</version>
+    <version>3.180.0</version>
     <packaging>pom</packaging>
     <url>http://www.applitools.com</url>
     <description>Connectivity modules of Applitools java sdk</description>
@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.applitools</groupId>
         <artifactId>eyes-sdk-java3-parent</artifactId>
-        <version>3.179.0</version>
+        <version>3.180.0</version>
     </parent>
     <scm>
         <connection>scm:git:git://github.com/applitools/eyes.common.java3.git</connection>

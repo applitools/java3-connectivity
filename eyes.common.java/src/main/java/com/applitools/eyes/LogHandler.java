@@ -1,14 +1,31 @@
 package com.applitools.eyes;
 
+import com.applitools.eyes.logging.TraceLevel;
+
 /**
  * Handles log messages produces by the Eyes API.
  */
-public interface LogHandler {
-    void open();
+public abstract class LogHandler {
+    private final boolean isVerbose;
 
-    void onMessage(boolean verbose, String logString);
+    protected LogHandler(boolean isVerbose) {
+        this.isVerbose = isVerbose;
+    }
 
-    void close();
+    public abstract void open();
 
-    boolean isOpen();
+    public void onMessage(TraceLevel level, String message) {
+        if (level == null) {
+            level = TraceLevel.Notice;
+        }
+        if (level.isHigherThan(TraceLevel.Notice) || isVerbose) {
+            onMessage(String.format("[%s]\t%s", level.name(), message));
+        }
+    }
+
+    public abstract void onMessage(String message);
+
+    public abstract void close();
+
+    public abstract boolean isOpen();
 }

@@ -1,13 +1,19 @@
 package com.applitools.eyes;
 
+import com.applitools.eyes.logging.TraceLevel;
+
 /**
  * Ignores all log messages.
  */
-public class NullLogHandler implements LogHandler {
+public class NullLogHandler extends LogHandler {
 
     public static final NullLogHandler instance = new NullLogHandler();
 
-    public void onMessage(boolean verbose, String logString) {
+    protected NullLogHandler() {
+        super(false);
+    }
+
+    public void onMessage(String message) {
     }
 
     public void open() {

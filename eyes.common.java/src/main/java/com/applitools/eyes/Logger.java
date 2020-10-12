@@ -1,5 +1,7 @@
 package com.applitools.eyes;
 
+import com.applitools.eyes.logging.TraceLevel;
+
 /**
  * Logs trace messages.
  */
@@ -68,7 +70,7 @@ public class Logger {
      * @param message The message to log as verbose.
      */
     public void verbose(String message) {
-        logHandler.onMessage(true, "[VERBOSE] " + getPrefix() + message);
+        logHandler.onMessage(TraceLevel.Info, getPrefix() + message);
     }
 
     /**
@@ -77,6 +79,10 @@ public class Logger {
      * @param message The message to log.
      */
     public void log(String message) {
-        logHandler.onMessage(false, "[LOG    ] " + getPrefix() + message);
+        logHandler.onMessage(null, getPrefix() + message);
+    }
+
+    public void log(TraceLevel level, String message) {
+        logHandler.onMessage(level, getPrefix() + message);
     }
 }

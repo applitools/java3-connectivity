@@ -27,7 +27,13 @@ public class EyesSyncObject {
                 return;
             }
 
-            logger.log(String.format("WARNING: Waiting for %d on object %s", WAIT_TIMEOUT, id));
+            String message = String.format("WARNING: Waiting for %d on object %s", WAIT_TIMEOUT, id);
+            if (logger != null) {
+                logger.log(message);
+            } else {
+                System.out.println(message);
+            }
+
             wait();
         } finally {
             isNotified = false;

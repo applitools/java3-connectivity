@@ -5,6 +5,8 @@ import com.applitools.utils.ArgumentGuard;
 import com.sun.jersey.api.client.ClientResponse;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ResponseImpl extends Response {
 
@@ -42,6 +44,16 @@ public class ResponseImpl extends Response {
         }
 
         return null;
+    }
+
+    @Override
+    protected Map<String, String> getHeaders() {
+        Map<String, String> headers = new HashMap<>();
+        for (String key : response.getHeaders().keySet()) {
+            headers.put(key, getHeader(key, false));
+        }
+
+        return headers;
     }
 
     @Override

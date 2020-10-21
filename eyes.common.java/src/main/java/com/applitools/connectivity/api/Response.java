@@ -2,6 +2,9 @@ package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class Response {
 
     protected Logger logger;
@@ -25,6 +28,8 @@ public abstract class Response {
      */
     public abstract String getHeader(String name, boolean ignoreCase);
 
+    protected abstract Map<String,String> getHeaders();
+
     protected abstract void readEntity();
 
     public byte[] getBody() {
@@ -39,9 +44,9 @@ public abstract class Response {
 
     public void logIfError() {
         try {
-            if (getStatusCode() >= 400) {
-                logger.log(String.format("Got invalid response from the server. Status code: %s. Status Phrase: %s. Response body: %s",
-                        getStatusCode(), getStatusPhrase(), getBodyString()));
+            if (getStatusCode() >= 300) {
+                logger.log(String.format("Got invalid response from the server. Status code: %s. Status Phrase: %s. Headers: %s. Response body: %s",
+                        getStatusCode(), getStatusPhrase(), getHeaders(), getBodyString()));
             }
         } catch (Exception e) {
             logger.log(String.format("Failed logging the response body. Status code: %s", getStatusCode()));

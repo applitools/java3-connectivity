@@ -25,7 +25,7 @@ public class RequestImpl extends Request {
     }
 
     @Override
-    public Response methodInner(String method, Object data, String contentType) {
+    protected Response methodInner(String method, Object data, String contentType) {
         ArgumentGuard.notNullOrEmpty(method, "method");
         if (data != null) {
             if (contentType == null) {

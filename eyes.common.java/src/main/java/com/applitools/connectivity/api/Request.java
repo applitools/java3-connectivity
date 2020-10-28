@@ -38,7 +38,7 @@ public abstract class Request {
      * @param contentType The data content type.  If null, no data will be sent.
      * @return Response from the server
      */
-    public abstract Response methodInner(String method, Object data, String contentType);
+    protected abstract Response methodInner(String method, Object data, String contentType);
 
     public Response method(String method, Object data, String contentType) {
         try {

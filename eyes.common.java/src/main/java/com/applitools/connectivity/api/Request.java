@@ -20,7 +20,6 @@ public abstract class Request {
     public Request(Logger logger) {
         this.logger = logger;
         this.requestId = UUID.randomUUID().toString();
-        header("x-applitools-request-id", requestId);
     }
 
     /**
@@ -41,6 +40,7 @@ public abstract class Request {
     protected abstract Response methodInner(String method, Object data, String contentType);
 
     public Response method(String method, Object data, String contentType) {
+        header("x-applitools-request-id", requestId);
         try {
             return methodInner(method, data, contentType);
         } catch (Throwable t) {

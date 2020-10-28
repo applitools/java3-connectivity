@@ -21,7 +21,6 @@ public abstract class AsyncRequest {
     public AsyncRequest(Logger logger) {
         this.logger = logger;
         this.requestId = UUID.randomUUID().toString();
-        header("x-applitools-request-id", requestId);
     }
 
     /**

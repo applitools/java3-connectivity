@@ -1,16 +1,26 @@
 package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
+import com.applitools.utils.GeneralUtils;
+
+import java.util.UUID;
 
 public abstract class Request {
 
     public static String CONTENT_LENGTH_HEADER = "Content-Length";
     public static String CONTENT_TYPE_HEADER = "Content-Type";
 
+    private static final int REQUEST_TIMEOUT = 60 * 1000;
+    private static final int SLEEP_DURATION = 5000;
+    private int timePassed = 0;
+
     protected Logger logger;
+    protected final String requestId;
 
     public Request(Logger logger) {
         this.logger = logger;
+        this.requestId = UUID.randomUUID().toString();
+        header("x-applitools-request-id", requestId);
     }
 
     /**
@@ -28,5 +38,24 @@ public abstract class Request {
      * @param contentType The data content type.  If null, no data will be sent.
      * @return Response from the server
      */
-    public abstract Response method(String method, Object data, String contentType);
+    public abstract Response methodInner(String method, Object data, String contentType);
+
+    public Response method(String method, Object data, String contentType) {
+        try {
+            return methodInner(method, data, contentType);
+        } catch (Throwable t) {
+            if (timePassed >= REQUEST_TIMEOUT) {
+                throw t;
+            }
+
+            try {
+                Thread.sleep(SLEEP_DURATION);
+            } catch (InterruptedException ignored) {}
+
+            timePassed += SLEEP_DURATION;
+            GeneralUtils.logExceptionStackTrace(logger, t);
+            logger.verbose("Failed sending request. Trying again.");
+            return method(method, data, contentType);
+        }
+    }
 }

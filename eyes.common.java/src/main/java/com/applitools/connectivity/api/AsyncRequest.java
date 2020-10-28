@@ -1,6 +1,7 @@
 package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
+import com.applitools.utils.GeneralUtils;
 
 import java.util.UUID;
 import java.util.concurrent.Future;
@@ -9,6 +10,10 @@ import java.util.concurrent.Future;
  * Wrapper for the asynchronous request api of the connectivity packages
  */
 public abstract class AsyncRequest {
+
+    private static final int REQUEST_TIMEOUT = 60 * 1000;
+    private static final int SLEEP_DURATION = 5000;
+    private int timePassed = 0;
 
     protected Logger logger;
     protected final String requestId;
@@ -37,7 +42,7 @@ public abstract class AsyncRequest {
      */
     public abstract Future<?> method(String method, AsyncRequestCallback callback, Object data, String contentType, boolean logIfError);
 
-    public Future<?> method(final String method, final AsyncRequestCallback callback, Object data, String contentType) {
+    public Future<?> method(final String method, final AsyncRequestCallback callback, final Object data, final String contentType) {
         header("x-applitools-request-id", requestId);
         logger.verbose(String.format("Sending async request to the server. ID: %s, Type: %s", requestId, method));
         return method(method, new AsyncRequestCallback() {
@@ -49,8 +54,20 @@ public abstract class AsyncRequest {
 
             @Override
             public void onFail(Throwable throwable) {
-                logger.verbose(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
-                callback.onFail(throwable);
+                if (timePassed >= REQUEST_TIMEOUT) {
+                    logger.verbose(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
+                    callback.onFail(throwable);
+                    return;
+                }
+
+                try {
+                    Thread.sleep(SLEEP_DURATION);
+                } catch (InterruptedException ignored) {}
+
+                timePassed += SLEEP_DURATION;
+                GeneralUtils.logExceptionStackTrace(logger, throwable);
+                logger.verbose(String.format("Failed sending request. Trying again. ID: %s, Type: %s", requestId, method));
+                method(method, callback, data, contentType);
             }
         }, data, contentType, true);
     }

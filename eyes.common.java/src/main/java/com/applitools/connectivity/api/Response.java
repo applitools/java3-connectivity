@@ -45,11 +45,11 @@ public abstract class Response {
     public void logIfError() {
         try {
             if (getStatusCode() >= 300) {
-                logger.log(String.format("Got invalid response from the server. Status code: %s. Status Phrase: %s. Headers: %s. Response body: %s",
+                logger.verbose(String.format("Got invalid response from the server. Status code: %s. Status Phrase: %s. Headers: %s. Response body: %s",
                         getStatusCode(), getStatusPhrase(), getHeaders(), getBodyString()));
             }
         } catch (Exception e) {
-            logger.log(String.format("Failed logging the response body. Status code: %s", getStatusCode()));
+            logger.verbose(String.format("Failed logging the response body. Status code: %s", getStatusCode()));
         }
     }
 }

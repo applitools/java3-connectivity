@@ -55,7 +55,7 @@ public abstract class AsyncRequest {
             @Override
             public void onFail(Throwable throwable) {
                 if (timePassed >= REQUEST_TIMEOUT) {
-                    logger.verbose(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
+                    logger.log(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
                     callback.onFail(throwable);
                     return;
                 }
@@ -66,7 +66,7 @@ public abstract class AsyncRequest {
 
                 timePassed += SLEEP_DURATION;
                 GeneralUtils.logExceptionStackTrace(logger, throwable);
-                logger.verbose(String.format("Failed sending request. Trying again. ID: %s, Type: %s", requestId, method));
+                logger.log(String.format("Failed sending request. Trying again. ID: %s, Type: %s", requestId, method));
                 method(method, callback, data, contentType);
             }
         }, data, contentType, true);

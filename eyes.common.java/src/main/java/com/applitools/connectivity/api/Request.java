@@ -54,7 +54,7 @@ public abstract class Request {
 
             timePassed += SLEEP_DURATION;
             GeneralUtils.logExceptionStackTrace(logger, t);
-            logger.verbose("Failed sending request. Trying again.");
+            logger.log("Failed sending request. Trying again.");
             return method(method, data, contentType);
         }
     }

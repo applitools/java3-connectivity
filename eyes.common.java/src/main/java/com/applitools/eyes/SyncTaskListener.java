@@ -44,6 +44,10 @@ public class SyncTaskListener<T> implements TaskListener<T> {
      * Waits for the task to be completed and then returns the result
      */
     public T get() {
+        if (reference.get() != null) {
+            return reference.get();
+        }
+
         synchronized (syncObject.get()) {
             try {
                 syncObject.get().waitForNotify();
@@ -51,6 +55,7 @@ public class SyncTaskListener<T> implements TaskListener<T> {
                 throw new EyesException("Failed waiting for task", e);
             }
         }
+
         return reference.get();
     }
 }

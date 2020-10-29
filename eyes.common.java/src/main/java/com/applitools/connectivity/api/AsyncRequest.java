@@ -49,7 +49,11 @@ public abstract class AsyncRequest {
             @Override
             public void onComplete(Response response) {
                 logger.verbose(String.format("Async request onComplete. ID: %s, Type: %s", requestId, method));
-                callback.onComplete(response);
+                try {
+                    callback.onComplete(response);
+                } catch (Throwable t) {
+                    callback.onFail(t);
+                }
             }
 
             @Override

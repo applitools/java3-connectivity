@@ -52,6 +52,6 @@ public class EyesSyncObject {
 
     public void notifyObject() {
         isNotified = true;
-        notify();
+        notifyAll();
     }
 }

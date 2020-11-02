@@ -26,25 +26,26 @@ public class SyncTaskListener<T> implements TaskListener<T> {
 
     @Override
     public void onComplete(T taskResponse) {
-        if (logger != null) {
-            logger.verbose(String.format("Completed task %s", id));
-        }
-
         synchronized (syncObject) {
             reference = taskResponse;
             syncObject.notifyObject();
+        }
+
+        if (logger != null) {
+            logger.verbose(String.format("Completed task %s", id));
         }
     }
 
     @Override
     public void onFail() {
+        synchronized (syncObject) {
+            syncObject.notifyObject();
+        }
+
         if (logger != null) {
             logger.verbose(String.format("Task %s has failed", id));
         }
 
-        synchronized (syncObject) {
-            syncObject.notifyObject();
-        }
     }
 
     /**

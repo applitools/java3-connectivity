@@ -26,27 +26,23 @@ public class EyesSyncObject {
     }
 
     public void waitForNotify() throws InterruptedException {
-        try {
+        if (isNotified) {
+            return;
+        }
+
+        while (true) {
+            wait(WAIT_TIMEOUT);
             if (isNotified) {
                 return;
             }
 
-            while (true) {
-                wait(WAIT_TIMEOUT);
-                if (isNotified) {
-                    return;
-                }
-
-                timeWaited += WAIT_TIMEOUT;
-                String message = String.format("WARNING: Waiting for %dms on object %s", timeWaited, id);
-                if (logger != null) {
-                    logger.log(message);
-                } else {
-                    System.out.println(message);
-                }
+            timeWaited += WAIT_TIMEOUT;
+            String message = String.format("WARNING: Waiting for %dms on object %s", timeWaited, id);
+            if (logger != null) {
+                logger.log(message);
+            } else {
+                System.out.println(message);
             }
-        } finally {
-            isNotified = false;
         }
     }
 

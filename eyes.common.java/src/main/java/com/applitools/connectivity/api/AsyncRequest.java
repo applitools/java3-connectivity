@@ -43,7 +43,7 @@ public abstract class AsyncRequest {
     public abstract Future<?> method(String method, AsyncRequestCallback callback, Object data, String contentType, boolean logIfError);
 
     public Future<?> method(final String method, final AsyncRequestCallback callback, final Object data, final String contentType) {
-        header("x-applitools-request-id", requestId);
+        header("x-applitools-eyes-client-request-id", requestId);
         logger.verbose(String.format("Sending async request to the server. ID: %s, Type: %s", requestId, method));
         return method(method, new AsyncRequestCallback() {
             @Override

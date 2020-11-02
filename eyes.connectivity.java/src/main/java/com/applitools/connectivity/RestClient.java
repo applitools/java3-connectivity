@@ -150,7 +150,7 @@ public class RestClient {
      * Send a synchronous request to the server
      */
     public Response sendHttpRequest(final String url, final String method, final String... accept) {
-        final SyncTaskListener<Response> listener = new SyncTaskListener<>(logger, "sendHttpRequest");
+        final SyncTaskListener<Response> listener = new SyncTaskListener<>(logger, String.format("sendHttpRequest to %s", url));
         sendAsyncRequest(new AsyncRequestCallback() {
             @Override
             public void onComplete(Response response) {

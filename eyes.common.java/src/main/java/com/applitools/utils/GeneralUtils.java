@@ -353,13 +353,13 @@ public class GeneralUtils {
         return null;
     }
 
-    public static String sanitizeURL(String urlToSanitize, Logger logger) {
-        String encoded = urlToSanitize;
-        try {
-            URL url = new URL(urlToSanitize);
-            encoded = url.getProtocol() + "://" + url.getAuthority() + url.getPath() + (url.getQuery() != null && !url.getQuery().isEmpty() ? QUESTION_MARK + URLEncoder.encode(url.getQuery(), "UTF-8") : "");
-        } catch (UnsupportedEncodingException | MalformedURLException e) {
-            GeneralUtils.logExceptionStackTrace(logger, e);
+    public static String sanitizeURL(String urlToSanitize) {
+        String encoded = urlToSanitize.replace(" ", "%20");
+        if (encoded.contains("#")) {
+            encoded = encoded.substring(0, encoded.indexOf("#"));
+        }
+        if (encoded.endsWith("?")) {
+            encoded = encoded.substring(0, encoded.indexOf("?"));
         }
         return encoded;
     }

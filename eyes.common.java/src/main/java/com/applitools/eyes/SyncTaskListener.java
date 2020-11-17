@@ -2,42 +2,66 @@ package com.applitools.eyes;
 
 import com.applitools.utils.EyesSyncObject;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class SyncTaskListener<T> implements TaskListener<T> {
 
-    private final AtomicReference<EyesSyncObject> syncObject;
-    private final AtomicReference<T> reference;
+    private final Logger logger;
+    private String id;
+    private final EyesSyncObject syncObject;
+    private T reference = null;
 
-
-    public SyncTaskListener(AtomicReference<EyesSyncObject> syncObject) {
-        this(syncObject, null);
+    public SyncTaskListener(Logger logger) {
+        this(logger, "");
     }
 
-    public SyncTaskListener(AtomicReference<EyesSyncObject> syncObject, AtomicReference<T> reference) {
-        this.syncObject = syncObject;
-        this.reference = reference;
+    public SyncTaskListener(Logger logger, String id) {
+        this.logger = logger;
+        this.id = id;
+        this.syncObject = new EyesSyncObject(logger, id);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+        this.syncObject.setId(id);
     }
 
     @Override
     public void onComplete(T taskResponse) {
-        if (reference != null) {
-            reference.set(taskResponse);
+        synchronized (syncObject) {
+            reference = taskResponse;
+            syncObject.notifyObject();
         }
 
-        synchronized (syncObject.get()) {
-            syncObject.get().notifyObject();
+        if (logger != null) {
+            logger.verbose(String.format("Completed task %s", id));
         }
     }
 
     @Override
     public void onFail() {
-        synchronized (syncObject.get()) {
-            syncObject.get().notifyObject();
+        synchronized (syncObject) {
+            syncObject.notifyObject();
         }
+
+        if (logger != null) {
+            logger.verbose(String.format("Task %s has failed", id));
+        }
+
     }
 
-    public AtomicReference<T> getReference() {
-        return reference;
+    /**
+     * Waits for the task to be completed and then returns the result
+     */
+    public T get() {
+        synchronized (syncObject) {
+            if (syncObject.isNotified()) {
+                return reference;
+            }
+            try {
+                syncObject.waitForNotify();
+            } catch (InterruptedException e) {
+                throw new EyesException("Failed waiting for task", e);
+            }
+            return reference;
+        }
     }
 }

@@ -8,7 +8,8 @@ public class EyesSyncObject {
 
     private boolean isNotified = false;
     private final Logger logger;
-    private final String id;
+    private String id;
+    private int timeWaited = 0;
 
 
     public EyesSyncObject(Logger logger, String id) {
@@ -16,32 +17,37 @@ public class EyesSyncObject {
         this.id = id;
     }
 
-    public void waitForNotify() throws InterruptedException {
-        try {
-            if (isNotified) {
-                return;
-            }
+    public void setId(String id) {
+        this.id = id;
+    }
 
+    public boolean isNotified() {
+        return isNotified;
+    }
+
+    public void waitForNotify() throws InterruptedException {
+        if (isNotified) {
+            return;
+        }
+
+        while (true) {
             wait(WAIT_TIMEOUT);
             if (isNotified) {
                 return;
             }
 
-            String message = String.format("WARNING: Waiting for %d on object %s", WAIT_TIMEOUT, id);
+            timeWaited += WAIT_TIMEOUT;
+            String message = String.format("WARNING: Waiting for %dms on object %s", timeWaited, id);
             if (logger != null) {
                 logger.log(message);
             } else {
                 System.out.println(message);
             }
-
-            wait();
-        } finally {
-            isNotified = false;
         }
     }
 
     public void notifyObject() {
         isNotified = true;
-        notify();
+        notifyAll();
     }
 }

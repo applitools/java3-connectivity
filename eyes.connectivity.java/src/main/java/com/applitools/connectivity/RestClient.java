@@ -61,11 +61,15 @@ public class RestClient {
 
     public void setLogger(Logger logger) {
         ArgumentGuard.notNull(logger, "logger");
-        this.logger = logger;
-        AbstractProxySettings proxySettings = restClient.getProxySettings();
-        int timeout = restClient.getTimeout();
-        restClient.close();
-        restClient = new HttpClientImpl(logger, timeout, proxySettings);
+        if (restClient != null) {
+            restClient.setLogger(logger);
+        }
+
+        if (this.logger == null) {
+            this.logger = logger;
+        } else {
+            this.logger.setLogHandler(logger.getLogHandler());
+        }
     }
 
     public Logger getLogger() {
@@ -100,6 +104,14 @@ public class RestClient {
 
     protected URI getServerUrlBase() {
         return serverUrl;
+    }
+
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
+    }
+
+    public String getAgentId() {
+        return this.agentId;
     }
 
     protected void initClient() {

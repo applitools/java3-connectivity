@@ -139,8 +139,7 @@ public class RestClient {
     protected AsyncRequest makeEyesRequest(HttpRequestBuilder builder) {
         AsyncRequest request = builder.build();
         if (agentId == null) {
-            logger.log("Sending a request without agent id");
-            return request;
+            throw new EyesException("Sending a request without agent id");
         }
 
         return request.header(AGENT_ID_CUSTOM_HEADER, agentId);

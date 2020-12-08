@@ -175,12 +175,13 @@ public class RestClient {
         String currentTime = GeneralUtils.toRfc1123(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         request = request
                 .header("Eyes-Expect", "202+location")
+                .header("Eyes-Expect-Version", "2")
                 .header("Eyes-Date", currentTime);
 
         AsyncRequestCallback requestFinishedCallback = new AsyncRequestCallback() {
             @Override
             public void onComplete(Response response) {
-                String statusUrl = response.getHeader(HttpHeaders.LOCATION, false);
+                String statusUrl = response.getHeader(HttpHeaders.LOCATION, true);
                 int status = response.getStatusCode();
                 if (statusUrl == null || status != HttpStatus.SC_ACCEPTED) {
                     logger.verbose(String.format("exit (%d)", status));

@@ -14,7 +14,7 @@ import javax.ws.rs.HttpMethod;
 class RequestPollingCallback implements AsyncRequestCallback {
 
     private final RestClient restClient;
-    private final String pollingUrl;
+    private String pollingUrl;
     private final AsyncRequestCallback pollingFinishedCallback;
     private int sleepDuration = 500;
     private int requestCount = 0;
@@ -31,7 +31,7 @@ class RequestPollingCallback implements AsyncRequestCallback {
             int status = response.getStatusCode();
             if (status == HttpStatus.SC_CREATED) {
                 restClient.logger.verbose("exit (CREATED)");
-                restClient.sendAsyncRequest(pollingFinishedCallback, response.getHeader(HttpHeaders.LOCATION, false), HttpMethod.DELETE);
+                restClient.sendAsyncRequest(pollingFinishedCallback, response.getHeader(HttpHeaders.LOCATION, true), HttpMethod.DELETE);
                 return;
             }
 
@@ -40,23 +40,28 @@ class RequestPollingCallback implements AsyncRequestCallback {
                         String.format("Got bad status code when polling from the server. Status code: %d", status)));
                 return;
             }
-
-            try {
-                Thread.sleep(sleepDuration);
-            } catch (InterruptedException e) {
-                pollingFinishedCallback.onFail(new EyesException("Long request interrupted!", e));
-                return;
-            }
         } finally {
             response.close();
         }
 
-        if (requestCount++ >= 5) {
-            sleepDuration *= 2;
-            requestCount = 0;
+        String location = response.getHeader(HttpHeaders.LOCATION, true);
+        if (location != null) {
+            pollingUrl = location;
         }
 
-        sleepDuration = Math.min(5000, sleepDuration);
+        int timeToWait = sleepDuration;
+        String secondsToWait = response.getHeader("Retry-After", true);
+        if (secondsToWait != null) {
+            timeToWait = Integer.parseInt(secondsToWait) * 1000;
+        } else if (requestCount++ >= 5) {
+            sleepDuration *= 2;
+            requestCount = 0;
+            sleepDuration = Math.min(5000, sleepDuration);
+        }
+
+        try {
+            Thread.sleep(timeToWait);
+        } catch (InterruptedException ignored) {}
         restClient.logger.verbose("polling...");
         restClient.sendAsyncRequest(this, pollingUrl, HttpMethod.GET);
     }

@@ -12,6 +12,7 @@ public enum BrowserType {
     SAFARI("safari"),
     SAFARI_ONE_VERSION_BACK("safari-1"),
     SAFARI_TWO_VERSIONS_BACK("safari-2"),
+    SAFARI_EARLY_ACCESS("safari-earlyaccess"),
     IE_10("ie10"),
     IE_11("ie11"),
 

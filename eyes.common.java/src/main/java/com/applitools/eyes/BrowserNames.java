@@ -29,6 +29,7 @@ public class BrowserNames {
             case SAFARI:
             case SAFARI_ONE_VERSION_BACK:
             case SAFARI_TWO_VERSIONS_BACK:
+            case SAFARI_EARLY_ACCESS:
                 return SAFARI;
 
             case IE_10:

@@ -5,6 +5,7 @@ import com.applitools.eyes.AbstractProxySettings;
 import com.applitools.eyes.EyesException;
 import com.applitools.eyes.Logger;
 import com.applitools.eyes.SyncTaskListener;
+import com.applitools.eyes.logging.Stage;
 import com.applitools.utils.ArgumentGuard;
 import com.applitools.utils.GeneralUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -65,11 +66,7 @@ public class RestClient {
             restClient.setLogger(logger);
         }
 
-        if (this.logger == null) {
-            this.logger = logger;
-        } else {
-            this.logger.setLogHandler(logger.getLogHandler());
-        }
+       this.logger = logger;
     }
 
     public Logger getLogger() {
@@ -151,7 +148,6 @@ public class RestClient {
     protected AsyncRequest makeEyesRequest(HttpRequestBuilder builder) {
         AsyncRequest request = builder.build();
         if (agentId == null) {
-            logger.log("Sending a request without agent id");
             return request;
         }
 
@@ -196,7 +192,6 @@ public class RestClient {
                 String statusUrl = response.getHeader(HttpHeaders.LOCATION, true);
                 int status = response.getStatusCode();
                 if (statusUrl == null || status != HttpStatus.SC_ACCEPTED) {
-                    logger.verbose(String.format("exit (%d)", status));
                     callback.onComplete(response);
                     return;
                 }
@@ -296,7 +291,7 @@ public class RestClient {
         try {
             return IOUtils.toByteArray(new BrotliInputStream(new ByteArrayInputStream(responseBody)));
         } catch (IOException e) {
-            GeneralUtils.logExceptionStackTrace(logger, e);
+            GeneralUtils.logExceptionStackTrace(logger, Stage.GENERAL, e);
         }
         return new byte[0];
     }

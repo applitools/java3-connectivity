@@ -1,6 +1,11 @@
 package com.applitools.utils;
 
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.logging.Stage;
+import com.applitools.eyes.logging.TraceLevel;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.HashSet;
 
 public class EyesSyncObject {
 
@@ -37,9 +42,9 @@ public class EyesSyncObject {
             }
 
             timeWaited += WAIT_TIMEOUT;
-            String message = String.format("WARNING: Waiting for %dms on object %s", timeWaited, id);
+            String message = String.format("Waiting for %dms on object %s", timeWaited, id);
             if (logger != null) {
-                logger.log(message);
+                logger.log(TraceLevel.Warn, new HashSet<String>(), Stage.GENERAL, null, Pair.of("message", message));
             } else {
                 System.out.println(message);
             }

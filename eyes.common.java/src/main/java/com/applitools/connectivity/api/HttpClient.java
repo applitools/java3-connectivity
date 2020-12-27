@@ -19,11 +19,7 @@ public abstract class HttpClient {
     }
 
     public void setLogger(Logger logger) {
-        if (this.logger == null) {
-            this.logger = logger;
-        } else {
-            this.logger.setLogHandler(logger.getLogHandler());
-        }
+        this.logger = logger;
     }
 
     /**

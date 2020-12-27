@@ -1,11 +1,16 @@
 package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.logging.Stage;
+import com.applitools.eyes.logging.Type;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public abstract class Response {
+
+    private String requestId;
 
     protected Logger logger;
 
@@ -30,6 +35,10 @@ public abstract class Response {
 
     protected abstract Map<String,String> getHeaders();
 
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+
     protected abstract void readEntity();
 
     public byte[] getBody() {
@@ -45,11 +54,19 @@ public abstract class Response {
     public void logIfError() {
         try {
             if (getStatusCode() >= 300) {
-                logger.verbose(String.format("Got invalid response from the server. Status code: %s. Status Phrase: %s. Headers: %s. Response body: %s",
-                        getStatusCode(), getStatusPhrase(), getHeaders(), getBodyString()));
+                logger.log(new HashSet<String>(), Stage.GENERAL, Type.REQUEST_FAILED,
+                        Pair.of("statusCode", getStatusCode()),
+                        Pair.of("statusPhrase", getStatusPhrase()),
+                        Pair.of("headers", getHeaders()),
+                        Pair.of("body", getBodyString()),
+                        Pair.of("requestId", requestId));
             }
         } catch (Exception e) {
-            logger.verbose(String.format("Failed logging the response body. Status code: %s", getStatusCode()));
+            logger.log(new HashSet<String>(), Stage.GENERAL, Type.REQUEST_FAILED,
+                    Pair.of("statusCode", getStatusCode()),
+                    Pair.of("statusPhrase", getStatusPhrase()),
+                    Pair.of("headers", getHeaders()),
+                    Pair.of("requestId", requestId));
         }
     }
 }

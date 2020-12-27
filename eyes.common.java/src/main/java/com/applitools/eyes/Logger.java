@@ -1,30 +1,29 @@
 package com.applitools.eyes;
 
-import com.applitools.eyes.logging.TraceLevel;
+import com.applitools.eyes.logging.*;
+import com.applitools.utils.GeneralUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
 
 /**
  * Logs trace messages.
  */
 public class Logger {
-    private LogHandler logHandler;
-    private String sessionId;
-
-    protected int getMethodsBack() {
-        return 3;
-    }
+    private final MultiLogHandler logHandler;
+    private String agentId;
 
     public Logger() {
-        logHandler = new NullLogHandler();
-        sessionId = "";
+        logHandler = new MultiLogHandler();
     }
 
     public Logger(LogHandler handler) {
         this();
-        logHandler = handler;
+        logHandler.addLogHandler(handler);
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setAgentId(String agentId) {
+        this.agentId = agentId;
     }
 
     /**
@@ -42,47 +41,63 @@ public class Logger {
      *                com.applitools.eyes.NullLogHandler}.
      */
     public void setLogHandler(LogHandler handler) {
-        logHandler = handler == null ? NullLogHandler.instance : handler;
+        if (handler == null) {
+            logHandler.clear();
+        } else {
+            logHandler.addLogHandler(handler);
+        }
     }
 
-    /**
-     * @return The name of the method which called the logger, if possible,
-     * or an empty string.
-     */
-    protected String getPrefix() {
-        StackTraceElement[] stackTraceElements =
-                Thread.currentThread().getStackTrace();
+    @SafeVarargs
+    public final void log(String testId, Stage stage, Pair<String, ?>... data) {
+        logInner(TraceLevel.Notice, testId == null ? null : Collections.singleton(testId), stage, null, data);
+    }
 
-        String prefix = "{" + sessionId + "} ";
-        prefix += "[" + Thread.currentThread().getId() + "] ";
-        // getStackTrace()<-getPrefix()<-log()/verbose()<-"actual caller"
-        int methodsBack = getMethodsBack();
-        if (stackTraceElements.length > methodsBack) {
-            prefix += stackTraceElements[methodsBack].getClassName() + "." + stackTraceElements[methodsBack].getMethodName() + "(): ";
+    @SafeVarargs
+    public final void log(Set<String> testIds, Stage stage, Pair<String, ?>... data) {
+        logInner(TraceLevel.Notice, testIds, stage, null, data);
+    }
+
+    @SafeVarargs
+    public final void log(String testId, Stage stage, Type type, Pair<String, ?>... data) {
+        logInner(TraceLevel.Notice, testId == null ? null : Collections.singleton(testId), stage, type, data);
+    }
+
+    @SafeVarargs
+    public final void log(Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
+        logInner(TraceLevel.Notice, testIds, stage, type, data);
+    }
+
+    @SafeVarargs
+    public final void log(TraceLevel level, String testId, Stage stage, Pair<String, ?>... data) {
+        logInner(level, testId == null ? null : Collections.singleton(testId), stage, null, data);
+    }
+
+    @SafeVarargs
+    public final void log(TraceLevel level, Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
+        logInner(level, testIds, stage, type, data);
+    }
+
+    @SafeVarargs
+    private final void logInner(TraceLevel level, Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
+        Map<String, Object> map = new HashMap<>();
+        if (data != null && data.length > 0) {
+            for (Pair<String, ?> pair : data) {
+                map.put(pair.getLeft(), pair.getRight());
+            }
         }
 
-        return prefix;
-    }
+        StackTraceElement[] stackTraceElements =
+                Thread.currentThread().getStackTrace();
+        String stackTrace = "";
+        int methodsBack = 3;
+        if (stackTraceElements.length > methodsBack) {
+            stackTrace += stackTraceElements[methodsBack].getClassName() + "." + stackTraceElements[methodsBack].getMethodName() + "()";
+        }
 
-    /**
-     * Writes a verbose write message.
-     *
-     * @param message The message to log as verbose.
-     */
-    public void verbose(String message) {
-        logHandler.onMessage(TraceLevel.Info, getPrefix() + message);
-    }
-
-    /**
-     * Writes a (non-verbose) write message.
-     *
-     * @param message The message to log.
-     */
-    public void log(String message) {
-        logHandler.onMessage(null, getPrefix() + message);
-    }
-
-    public void log(TraceLevel level, String message) {
-        logHandler.onMessage(level, getPrefix() + message);
+        Message message = new Message(agentId, stage, type, testIds, Thread.currentThread().getId(), stackTrace, map);
+        String currentTime = GeneralUtils.toISO8601DateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        ClientEvent event = new ClientEvent(currentTime, message, level);
+        logHandler.onMessage(event);
     }
 }

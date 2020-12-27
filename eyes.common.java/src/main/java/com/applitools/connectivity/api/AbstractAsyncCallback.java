@@ -2,6 +2,7 @@ package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
 import com.applitools.eyes.TaskListener;
+import com.applitools.eyes.logging.Stage;
 import com.applitools.utils.GeneralUtils;
 
 public abstract class AbstractAsyncCallback<T> implements AsyncRequestCallback {
@@ -29,7 +30,7 @@ public abstract class AbstractAsyncCallback<T> implements AsyncRequestCallback {
 
     @Override
     public void onFail(Throwable throwable) {
-        GeneralUtils.logExceptionStackTrace(logger, throwable);
+        GeneralUtils.logExceptionStackTrace(logger, Stage.GENERAL, throwable);
         listener.onFail();
     }
 }

@@ -1,5 +1,6 @@
 package com.applitools.eyes;
 
+import com.applitools.eyes.logging.ClientEvent;
 import com.applitools.eyes.logging.TraceLevel;
 
 /**
@@ -9,11 +10,12 @@ public class NullLogHandler extends LogHandler {
 
     public static final NullLogHandler instance = new NullLogHandler();
 
-    protected NullLogHandler() {
-        super(false);
+    public NullLogHandler() {
+        super(TraceLevel.Notice);
     }
 
-    public void onMessage(String message) {
+    @Override
+    public void onMessageInner(ClientEvent event) {
     }
 
     public void open() {
@@ -25,5 +27,10 @@ public class NullLogHandler extends LogHandler {
     @Override
     public boolean isOpen() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof NullLogHandler;
     }
 }

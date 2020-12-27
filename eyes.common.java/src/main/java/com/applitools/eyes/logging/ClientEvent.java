@@ -2,14 +2,14 @@ package com.applitools.eyes.logging;
 
 public class ClientEvent {
     private final String timestamp;
-    private final String event;
+    private final Object event;
     private final TraceLevel level;
 
-    public ClientEvent(String timestamp, String event) {
+    public ClientEvent(String timestamp, Object event) {
         this(timestamp, event, null);
     }
 
-    public ClientEvent(String timestamp, String event, TraceLevel level) {
+    public ClientEvent(String timestamp, Object event, TraceLevel level) {
         this.timestamp = timestamp;
         this.event = event;
         this.level = level;
@@ -19,7 +19,7 @@ public class ClientEvent {
         return timestamp;
     }
 
-    public String getEvent() {
+    public Object getEvent() {
         return event;
     }
 

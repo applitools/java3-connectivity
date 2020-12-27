@@ -30,7 +30,6 @@ class RequestPollingCallback implements AsyncRequestCallback {
         try {
             int status = response.getStatusCode();
             if (status == HttpStatus.SC_CREATED) {
-                restClient.logger.verbose("exit (CREATED)");
                 restClient.sendAsyncRequest(pollingFinishedCallback, response.getHeader(HttpHeaders.LOCATION, true), HttpMethod.DELETE);
                 return;
             }
@@ -62,7 +61,6 @@ class RequestPollingCallback implements AsyncRequestCallback {
         try {
             Thread.sleep(timeToWait);
         } catch (InterruptedException ignored) {}
-        restClient.logger.verbose("polling...");
         restClient.sendAsyncRequest(this, pollingUrl, HttpMethod.GET);
     }
 

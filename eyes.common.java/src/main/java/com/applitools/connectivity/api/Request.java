@@ -1,6 +1,7 @@
 package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.logging.Stage;
 import com.applitools.utils.GeneralUtils;
 
 import java.util.UUID;
@@ -42,7 +43,9 @@ public abstract class Request {
     public Response method(String method, Object data, String contentType) {
         header("x-applitools-request-id", requestId);
         try {
-            return methodInner(method, data, contentType);
+            Response response = methodInner(method, data, contentType);
+            response.setRequestId(requestId);
+            return response;
         } catch (Throwable t) {
             if (timePassed >= REQUEST_TIMEOUT) {
                 throw t;
@@ -53,9 +56,10 @@ public abstract class Request {
             } catch (InterruptedException ignored) {}
 
             timePassed += SLEEP_DURATION;
-            GeneralUtils.logExceptionStackTrace(logger, t);
-            logger.log("Failed sending request. Trying again.");
-            return method(method, data, contentType);
+            GeneralUtils.logExceptionStackTrace(logger, Stage.GENERAL, t);
+            Response response = method(method, data, contentType);
+            response.setRequestId(requestId);
+            return response;
         }
     }
 }

@@ -7,7 +7,7 @@ import java.net.URI;
 
 public abstract class HttpClient {
 
-    protected final Logger logger;
+    protected Logger logger;
     protected final int timeout;
     protected final AbstractProxySettings abstractProxySettings;
     protected boolean isClosed = false;
@@ -16,6 +16,14 @@ public abstract class HttpClient {
         this.logger = logger;
         this.timeout = timeout;
         this.abstractProxySettings = abstractProxySettings;
+    }
+
+    public void setLogger(Logger logger) {
+        if (this.logger == null) {
+            this.logger = logger;
+        } else {
+            this.logger.setLogHandler(logger.getLogHandler());
+        }
     }
 
     /**

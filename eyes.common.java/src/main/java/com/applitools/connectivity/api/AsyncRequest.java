@@ -1,8 +1,13 @@
 package com.applitools.connectivity.api;
 
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.logging.Stage;
+import com.applitools.eyes.logging.TraceLevel;
+import com.applitools.eyes.logging.Type;
 import com.applitools.utils.GeneralUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
@@ -44,11 +49,12 @@ public abstract class AsyncRequest {
 
     public Future<?> method(final String method, final AsyncRequestCallback callback, final Object data, final String contentType) {
         header("x-applitools-eyes-client-request-id", requestId);
-        logger.verbose(String.format("Sending async request to the server. ID: %s, Type: %s", requestId, method));
+        logger.log(TraceLevel.Debug, new HashSet<String>(), Stage.GENERAL, Type.REQUEST_SENT, Pair.of("requestId", requestId));
         return method(method, new AsyncRequestCallback() {
             @Override
             public void onComplete(Response response) {
-                logger.verbose(String.format("Async request onComplete. ID: %s, Type: %s", requestId, method));
+                logger.log(TraceLevel.Debug, new HashSet<String>(), Stage.GENERAL, Type.REQUEST_COMPLETED, Pair.of("requestId", requestId));
+                response.setRequestId(requestId);
                 try {
                     callback.onComplete(response);
                 } catch (Throwable t) {
@@ -59,7 +65,7 @@ public abstract class AsyncRequest {
             @Override
             public void onFail(Throwable throwable) {
                 if (timePassed >= REQUEST_TIMEOUT) {
-                    logger.log(String.format("Async request onFail. ID: %s, Type: %s", requestId, method));
+                    logger.log(new HashSet<String>(), Stage.GENERAL, Type.REQUEST_FAILED, Pair.of("requestId", requestId));
                     callback.onFail(throwable);
                     return;
                 }
@@ -69,8 +75,8 @@ public abstract class AsyncRequest {
                 } catch (InterruptedException ignored) {}
 
                 timePassed += SLEEP_DURATION;
-                GeneralUtils.logExceptionStackTrace(logger, throwable);
-                logger.log(String.format("Failed sending request. Trying again. ID: %s, Type: %s", requestId, method));
+                GeneralUtils.logExceptionStackTrace(logger, Stage.GENERAL, throwable);
+                logger.log(new HashSet<String>(), Stage.GENERAL, Type.REQUEST_FAILED, Pair.of("requestId", requestId));
                 method(method, callback, data, contentType);
             }
         }, data, contentType, true);

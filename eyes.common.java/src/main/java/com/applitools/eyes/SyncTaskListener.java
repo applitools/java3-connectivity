@@ -1,6 +1,10 @@
 package com.applitools.eyes;
 
+import com.applitools.eyes.logging.Stage;
 import com.applitools.utils.EyesSyncObject;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.HashSet;
 
 public class SyncTaskListener<T> implements TaskListener<T> {
 
@@ -30,10 +34,6 @@ public class SyncTaskListener<T> implements TaskListener<T> {
             reference = taskResponse;
             syncObject.notifyObject();
         }
-
-        if (logger != null) {
-            logger.verbose(String.format("Completed task %s", id));
-        }
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SyncTaskListener<T> implements TaskListener<T> {
         }
 
         if (logger != null) {
-            logger.verbose(String.format("Task %s has failed", id));
+            logger.log(new HashSet<String>(), Stage.GENERAL, Pair.of("message", String.format("Task %s has failed", id)));
         }
 
     }

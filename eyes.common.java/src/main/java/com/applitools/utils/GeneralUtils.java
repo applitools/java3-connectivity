@@ -2,10 +2,14 @@ package com.applitools.utils;
 
 import com.applitools.eyes.EyesException;
 import com.applitools.eyes.Logger;
+import com.applitools.eyes.logging.Stage;
+import com.applitools.eyes.logging.Type;
+import com.applitools.eyes.logging.TraceLevel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.*;
 import java.net.*;
@@ -15,10 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -211,21 +212,20 @@ public class GeneralUtils {
         return sb.toString();
     }
 
-    /**
-     * Log exception stack trace.
-     *
-     * @param logger the logger
-     * @param ex     the ex
-     */
-    public static void logExceptionStackTrace(Logger logger, Throwable ex) {
+    public static void logExceptionStackTrace(Logger logger, Stage stage, Throwable ex, String... testIds) {
+        logExceptionStackTrace(logger, stage, null, ex, testIds);
+    }
+    public static void logExceptionStackTrace(Logger logger, Stage stage, Type type, Throwable ex, String... testIds) {
+        Set<String> ids = new HashSet<>();
+        if (testIds != null && testIds.length > 0) {
+            ids.addAll(Arrays.asList(testIds));
+        }
         ByteArrayOutputStream stream = new ByteArrayOutputStream(2048);
-        PrintWriter writer = new PrintWriter(stream, true);
-        ex.printStackTrace(writer);
-        logger.log(ex.toString());
-        try {
-            logger.log(stream.toString("UTF-8"));
-            writer.close();
-            stream.close();
+        try (PrintWriter writer = new PrintWriter(stream, true)) {
+            ex.printStackTrace(writer);
+            logger.log(TraceLevel.Error, ids, stage, type,
+                    Pair.of("message", ex.toString()),
+                    Pair.of("stacktrace", stream.toString("UTF-8")));
         } catch (Exception e) {
             e.printStackTrace();
         }

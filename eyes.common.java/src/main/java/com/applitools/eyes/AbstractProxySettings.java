@@ -6,6 +6,8 @@ package com.applitools.eyes;
 import com.applitools.utils.ArgumentGuard;
 import com.applitools.utils.GeneralUtils;
 
+import java.util.Objects;
+
 /***
  * Encapsulates settings for sending Eyes communication via proxy.
  */
@@ -80,5 +82,18 @@ public abstract class AbstractProxySettings {
 
     public int getPort() {
         return port;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractProxySettings that = (AbstractProxySettings) o;
+        return port == that.port && Objects.equals(uri, that.uri) && Objects.equals(username, that.username) && Objects.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uri, username, password, port);
     }
 }

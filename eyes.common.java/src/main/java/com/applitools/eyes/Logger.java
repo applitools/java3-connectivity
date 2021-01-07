@@ -80,6 +80,13 @@ public class Logger {
 
     @SafeVarargs
     private final void logInner(TraceLevel level, Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
+        String currentTime = GeneralUtils.toISO8601DateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+        ClientEvent event = new ClientEvent(currentTime, createMessageFromLog(testIds, stage, type, 4, data), level);
+        logHandler.onMessage(event);
+    }
+
+    @SafeVarargs
+    private final Message createMessageFromLog(Set<String> testIds, Stage stage, Type type, int methodsBack, Pair<String, ?>... data) {
         Map<String, Object> map = new HashMap<>();
         if (data != null && data.length > 0) {
             for (Pair<String, ?> pair : data) {
@@ -90,14 +97,15 @@ public class Logger {
         StackTraceElement[] stackTraceElements =
                 Thread.currentThread().getStackTrace();
         String stackTrace = "";
-        int methodsBack = 3;
         if (stackTraceElements.length > methodsBack) {
             stackTrace += stackTraceElements[methodsBack].getClassName() + "." + stackTraceElements[methodsBack].getMethodName() + "()";
         }
 
-        Message message = new Message(agentId, stage, type, testIds, Thread.currentThread().getId(), stackTrace, map);
-        String currentTime = GeneralUtils.toISO8601DateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
-        ClientEvent event = new ClientEvent(currentTime, message, level);
-        logHandler.onMessage(event);
+        return new Message(agentId, stage, type, testIds, Thread.currentThread().getId(), stackTrace, map);
+    }
+
+    @SafeVarargs
+    public final Message createMessageFromLog(Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
+        return createMessageFromLog(testIds, stage, type, 3, data);
     }
 }

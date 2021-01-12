@@ -27,7 +27,7 @@ public class ConnectivityTargetImpl extends ConnectivityTarget {
     @Override
     public ConnectivityTarget queryParam(String name, String value) {
         ArgumentGuard.notNullOrEmpty(name, "name");
-        ArgumentGuard.notNullOrEmpty(value, "value");
+        ArgumentGuard.notNullOrEmpty(value, name);
         target = target.queryParam(name, value);
         asyncTarget = asyncTarget.queryParam(name, value);
         return this;

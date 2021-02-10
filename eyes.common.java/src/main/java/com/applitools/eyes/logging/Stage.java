@@ -7,5 +7,6 @@ public enum Stage {
     CLOSE,
     RENDER,
     RESOURCE_COLLECTION,
-    LOCATE
+    LOCATE,
+    OCR
 }

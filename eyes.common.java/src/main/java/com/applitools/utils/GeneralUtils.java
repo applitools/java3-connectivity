@@ -41,26 +41,20 @@ public class GeneralUtils {
     private GeneralUtils() {
     }
 
-    /**
-     * Read to end string.
-     *
-     * @param inputStream The stream which content we would like to read.
-     * @return The entire contents of the input stream as a string.
-     * @throws IOException the io exception
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    public static String readToEnd(InputStream inputStream) throws IOException {
+    public static byte[] readInputStream(InputStream inputStream) throws IOException {
         ArgumentGuard.notNull(inputStream, "inputStream");
-
-        //noinspection SpellCheckingInspection
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
         while ((length = inputStream.read(buffer)) != -1) {
-            baos.write(buffer, 0, length);
+            byteArrayOutputStream.write(buffer, 0, length);
         }
 
-        return new String(baos.toByteArray());
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public static String readInputStreamAsString(InputStream inputStream) throws IOException {
+        return new String(readInputStream(inputStream));
     }
 
     /**
@@ -354,7 +348,7 @@ public class GeneralUtils {
     }
 
     public static String sanitizeURL(String urlToSanitize) {
-        String encoded = urlToSanitize.replace(" ", "%20");
+        String encoded = urlToSanitize.replace(" ", "%20").replace("|", "%7C");
         if (encoded.contains("#")) {
             encoded = encoded.substring(0, encoded.indexOf("#"));
         }

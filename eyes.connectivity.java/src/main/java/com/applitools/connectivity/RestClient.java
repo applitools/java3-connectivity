@@ -158,6 +158,10 @@ public class RestClient {
      * Send a synchronous request to the server
      */
     public Response sendHttpRequest(final String url, final String method, final String... accept) {
+        return sendHttpRequest(url, method, Collections.<String, String>emptyMap(), accept);
+    }
+
+    public Response sendHttpRequest(final String url, final String method, Map<String, String> queryParams, final String... accept) {
         final SyncTaskListener<Response> listener = new SyncTaskListener<>(logger, String.format("sendHttpRequest to %s", url));
         sendAsyncRequest(new AsyncRequestCallback() {
             @Override
@@ -169,7 +173,7 @@ public class RestClient {
             public void onFail(Throwable throwable) {
                 listener.onFail();
             }
-        }, url, method, new HashMap<String, String>(), accept);
+        }, url, method, queryParams, accept);
 
         Response response = listener.get();
         if (response == null) {

@@ -2,11 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>eyes-connectivity-java3-jersey1x</artifactId>
-    <name>eyes-connectivity-java3-jersey1x</name>
+    <artifactId>eyes-connectivity-java3-net</artifactId>
+    <name>eyes-connectivity-java3-net</name>
     <url>http://www.applitools.com</url>
 
-    <description>Applitools Eyes SDK REST API communication implementation depending on Jersey version 1x</description>
+    <description>Applitools Eyes SDK REST API communication implementation depending on java.net</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,14 +26,14 @@
             <version>3.201.1</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.19</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.6</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-apache-client4</artifactId>
-            <version>1.17.1</version>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>2.1.5</version>
         </dependency>
     </dependencies>
 </project>

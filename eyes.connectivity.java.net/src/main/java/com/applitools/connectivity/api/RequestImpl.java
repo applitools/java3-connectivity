@@ -9,13 +9,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
+import java.net.URISyntaxException;
 
 public class RequestImpl extends Request {
-    private final HttpURLConnection connection;
+    private final ConnectivityTargetImpl.ConnectionRetriever connectionRetriever;
+    private HttpURLConnection connection;
 
-    public RequestImpl(Logger logger, HttpURLConnection connection) {
+    public RequestImpl(Logger logger, ConnectivityTargetImpl.ConnectionRetriever connectionRetriever) {
         super(logger);
-        this.connection = connection;
+        this.connectionRetriever = connectionRetriever;
+        try {
+            connection = (HttpURLConnection) connectionRetriever.createConnection();
+        } catch (URISyntaxException | IOException e) {
+            throw new EyesException("Failed creating connection", e);
+        }
     }
 
     @Override
@@ -33,6 +40,11 @@ public class RequestImpl extends Request {
             return new ResponseImpl(logger, connection);
         } catch (Throwable t) {
             connection.disconnect();
+            try {
+                connection = (HttpURLConnection) connectionRetriever.createConnection();
+            } catch (URISyntaxException | IOException e) {
+                throw new EyesException("Failed creating connection", e);
+            }
             throw t;
         }
 
@@ -73,6 +85,9 @@ public class RequestImpl extends Request {
                 outputStream.flush();
                 outputStream.close();
             }
+
+            // Wait for response
+            connection.getResponseCode();
         } catch (Exception e) {
             connection.disconnect();
             throw new EyesException("Failed sending request", e);

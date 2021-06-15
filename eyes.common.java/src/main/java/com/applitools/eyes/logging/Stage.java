@@ -8,5 +8,8 @@ public enum Stage {
     RENDER,
     RESOURCE_COLLECTION,
     LOCATE,
-    OCR
+    OCR,
+    VCR,
+    VHS_RECORDER,
+    SCREENSHOT_RETRIEVER
 }

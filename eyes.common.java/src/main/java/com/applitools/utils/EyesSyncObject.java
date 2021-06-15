@@ -44,7 +44,7 @@ public class EyesSyncObject {
             timeWaited += WAIT_TIMEOUT;
             String message = String.format("Waiting for %dms on object %s", timeWaited, id);
             if (logger != null) {
-                logger.log(TraceLevel.Warn, new HashSet<String>(), Stage.GENERAL, null, Pair.of("message", message));
+                logger.log(TraceLevel.Warn, new HashSet<String>(), Stage.GENERAL, null, message);
             } else {
                 System.out.println(message);
             }

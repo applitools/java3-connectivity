@@ -79,6 +79,36 @@ public class Logger {
     }
 
     @SafeVarargs
+    public final void log(TraceLevel level, Stage stage, Type type, Pair<String, ?>... data) {
+        logInner(level, null, stage, type, data);
+    }
+
+    @SafeVarargs
+    public final void log(TraceLevel level, Stage stage, Pair<String, ?>... data) {
+        logInner(level, null, stage, null, data);
+    }
+
+    public final void log(TraceLevel level, Set<String> testIds, Stage stage, Type type, String message) {
+        logInner(level, testIds, stage, type, Pair.of("message", message));
+    }
+
+    public final void log(TraceLevel level, String testId, Stage stage, Type type, String message) {
+        logInner(level, testId == null ? null : Collections.singleton(testId), stage, type, Pair.of("message", message));
+    }
+
+    public final void log(TraceLevel level, String testId, Stage stage, String message) {
+        logInner(level, testId == null ? null : Collections.singleton(testId), stage, null, Pair.of("message", message));
+    }
+
+    public final void log(TraceLevel level, Stage stage, String message) {
+        logInner(level, null, stage, null, Pair.of("message", message));
+    }
+
+    public final void log(String testId, Stage stage, String message) {
+        logInner(TraceLevel.Notice, testId == null ? null : Collections.singleton(testId), stage, null, Pair.of("message", message));
+    }
+
+    @SafeVarargs
     private final void logInner(TraceLevel level, Set<String> testIds, Stage stage, Type type, Pair<String, ?>... data) {
         String currentTime = GeneralUtils.toISO8601DateTime(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         ClientEvent event = new ClientEvent(currentTime, createMessageFromLog(testIds, stage, type, 4, data), level);

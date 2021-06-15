@@ -1,6 +1,7 @@
 package com.applitools.eyes;
 
 import com.applitools.eyes.logging.Stage;
+import com.applitools.eyes.logging.TraceLevel;
 import com.applitools.utils.EyesSyncObject;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -43,7 +44,7 @@ public class SyncTaskListener<T> implements TaskListener<T> {
         }
 
         if (logger != null) {
-            logger.log(new HashSet<String>(), Stage.GENERAL, Pair.of("message", String.format("Task %s has failed", id)));
+            logger.log(TraceLevel.Notice, Stage.GENERAL, String.format("Task %s has failed", id));
         }
 
     }

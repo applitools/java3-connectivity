@@ -183,6 +183,10 @@ public class RestClient {
         return response;
     }
 
+    public Response sendHttpRequest(String url, String method, Object data, String contentType, String... accept) {
+        return restClient.target(url).request(accept).method(method, data, contentType);
+    }
+
     protected void sendLongRequest(AsyncRequest request, String method, final AsyncRequestCallback callback, String data, String mediaType) throws EyesException {
         String currentTime = GeneralUtils.toRfc1123(Calendar.getInstance(TimeZone.getTimeZone("UTC")));
         request = request
